@@ -1,0 +1,21 @@
+name: build-dylib
+on:
+  workflow_dispatch:
+  push:
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build GrannyMod.dylib
+        run: |
+          xcrun -sdk iphoneos clang++ -arch arm64 -std=c++17 -fobjc-arc \
+            -miphoneos-version-min=14.0 -dynamiclib \
+            -framework UIKit -framework Foundation \
+            -install_name @rpath/GrannyMod.dylib \
+            -o GrannyMod.dylib Tweak.mm
+          file GrannyMod.dylib
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GrannyMod
+          path: GrannyMod.dylib
